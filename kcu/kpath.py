@@ -31,8 +31,27 @@ def file_paths_from_folder(
 def path_of_file(f: str) -> str:
     return os.path.abspath(f)
 
-def folder_path_of_file(f: str) -> str:
-    return os.path.dirname(path_of_file(f))
+# If left None, the file path of the caller will be used, but in that case, the return value can be None too
+def folder_path_of_file(file: Optional[str] = None) -> Optional[str]:
+    if file is None:
+        try:
+            import inspect
+
+            filef = inspect.stack()[1][1]
+        except:
+            return None
+
+    return os.path.dirname(path_of_file(file))
+
+def path_for_subpath_in_current_folder(subpath: str) -> Optional[str]:
+    try:
+        import inspect
+
+        caller_file_path = inspect.stack()[1][1]
+
+        return os.path.join(os.path.dirname(path_of_file(inspect.stack()[1][1])), subpath)
+    except:
+        return None
 
 def temp_path_for_path(_path: str) -> str:
     import random, string
