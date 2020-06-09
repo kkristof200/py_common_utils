@@ -167,7 +167,7 @@ def __request(
         if resp is None:
             if debug:
                 print('Response is None')
-        elif resp.status_code != 200 or resp.status_code != 201:
+        elif resp.status_code not in [200, 201]:
             if debug:
                 print(resp.status_code, resp.text)
 
