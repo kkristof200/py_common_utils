@@ -1,5 +1,6 @@
 from typing import Dict, Optional
 import time, requests, os
+from enum import Enum
 
 from fake_useragent import FakeUserAgent
 
@@ -56,9 +57,17 @@ def __download(
         
         return False
 
+class RequestMethod(Enum):
+    GET     = 'GET'
+    POST    = 'POST'
+    DELETE  = 'DELETE'
+
 def request(
     url: str,
-    headers: Dict = None,
+    method: RequestMethod = RequestMethod.GET,
+    params: Optional[Dict] = None,
+    headers: Optional[Dict] = None,
+    data: Optional[Dict] = None,
     max_request_try_count: int = 10,
     sleep_time: float = 2.5,
     debug: bool = False,
@@ -86,43 +95,82 @@ def request(
     
     return None
 
+def get(
+    url: str,
+    params: Optional[Dict] = None,
+    headers: Optional[Dict] = None,
+    max_request_try_count: int = 10,
+    sleep_time: float = 2.5,
+    debug: bool = False,
+    fake_useragent: bool = False
+) -> Optional[Response]:
+    return request(url, method=RequestMethod.GET, params=params, headers=headers, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, fake_useragent=fake_useragent)
+
+def post(
+    url: str,
+    params: Optional[Dict] = None,
+    headers: Optional[Dict] = None,
+    data: Optional[Dict] = None,
+    max_request_try_count: int = 10,
+    sleep_time: float = 2.5,
+    debug: bool = False,
+    fake_useragent: bool = False
+) -> Optional[Response]:
+    return request(url, method=RequestMethod.POST, params=params, headers=headers, data=data, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, fake_useragent=fake_useragent)
+
+def delete(
+    url: str,
+    params: Optional[Dict] = None,
+    headers: Optional[Dict] = None,
+    data: Optional[Dict] = None,
+    max_request_try_count: int = 10,
+    sleep_time: float = 2.5,
+    debug: bool = False,
+    fake_useragent: bool = False
+) -> Optional[Response]:
+    return request(url, method=RequestMethod.DELETE, params=params, headers=headers, data=data, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, fake_useragent=fake_useragent)
+
 def __request(
     url: str,
-    headers: Dict = None,
+    method: RequestMethod = RequestMethod.GET,
+    params: Optional[Dict] = None,
+    headers: Optional[Dict] = None,
+    data: Optional[Dict] = None,
     debug: bool = False,
     fake_useragent: bool = False
 ) -> Optional[Response]:
     if headers is None:
         headers = {}
-    
-    ua = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:74.0) Gecko/20100101 Firefox/74.0'
 
-    if fake_useragent:
-        ua = FakeUserAgent().random
-    
-    headers = __headers_by_optionally_setting(headers, {
-        'User-Agent':ua,
-        'Accept':'*/*',
-        'Cache-Control':'no-cache',
-        'Accept-Encoding':'gzip, deflate, br',
-        'Connection':'keep-alive'
-    })
+    if fake_useragent:    
+        headers = __headers_by_optionally_setting(
+            headers,
+            {
+                'User-Agent':FakeUserAgent().random,
+                'Accept':'*/*',
+                'Cache-Control':'no-cache',
+                'Accept-Encoding':'gzip, deflate, br',
+                'Connection':'keep-alive'
+            }
+        )
 
     try:
-        resp = requests.get(url, headers=headers)
+        if method == RequestMethod.GET:
+            resp = requests.get(url, params=params, headers=headers)
+        elif method == RequestMethod.POST:
+            resp = requests.post(url, data=data, params=params, headers=headers)
+        else:#elif method == RequestMethod.DELETE:
+            resp = requests.post(url, data=data, params=params, headers=headers)
 
         if resp is None:
             if debug:
-                print('ERROR: Resp is None')
-            
+                print('Response is None')
+        elif resp.status_code != 200 or resp.status_code != 201:
+            if debug:
+                print(resp.status_code, resp.text)
+
             return None
 
-        if resp.status_code != 200:
-            if debug:
-                print('ERROR:', resp)
-            
-            return None
-        
         return resp
     except Exception as e:
         if debug:
