@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, Optional, Any
 import time, requests, os
 from enum import Enum
 
@@ -67,7 +67,7 @@ def request(
     method: RequestMethod = RequestMethod.GET,
     params: Optional[Dict] = None,
     headers: Optional[Dict] = None,
-    data: Optional[Dict] = None,
+    data: Optional[Any] = None,
     max_request_try_count: int = 10,
     sleep_time: float = 2.5,
     debug: bool = False,
@@ -112,7 +112,7 @@ def post(
     url: str,
     params: Optional[Dict] = None,
     headers: Optional[Dict] = None,
-    data: Optional[Dict] = None,
+    data: Optional[Any] = None,
     max_request_try_count: int = 10,
     sleep_time: float = 2.5,
     debug: bool = False,
@@ -124,7 +124,7 @@ def delete(
     url: str,
     params: Optional[Dict] = None,
     headers: Optional[Dict] = None,
-    data: Optional[Dict] = None,
+    data: Optional[Any] = None,
     max_request_try_count: int = 10,
     sleep_time: float = 2.5,
     debug: bool = False,
@@ -137,7 +137,7 @@ def __request(
     method: RequestMethod,
     params: Optional[Dict] = None,
     headers: Optional[Dict] = None,
-    data: Optional[Dict] = None,
+    data: Optional[Any] = None,
     debug: bool = False,
     fake_useragent: bool = False
 ) -> Optional[Response]:
