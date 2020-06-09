@@ -82,8 +82,10 @@ def request(
             print(url + ' | ' + str(current_try_count) + '/' + str(max_request_try_count))
 
         resp = __request(
-            url,
+            url, method,
+            params=params,
             headers=headers,
+            data=data,
             debug=debug,
             fake_useragent=fake_useragent
         )
@@ -132,7 +134,7 @@ def delete(
 
 def __request(
     url: str,
-    method: RequestMethod = RequestMethod.GET,
+    method: RequestMethod,
     params: Optional[Dict] = None,
     headers: Optional[Dict] = None,
     data: Optional[Dict] = None,
