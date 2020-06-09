@@ -77,7 +77,7 @@ def request(
 
     while current_try_count < max_request_try_count:
         current_try_count += 1
-        
+
         if debug:
             print(url + ' | ' + str(current_try_count) + '/' + str(max_request_try_count))
 
@@ -92,7 +92,7 @@ def request(
 
         if resp is not None:
             return resp
-        
+
         time.sleep(sleep_time)
     
     return None
