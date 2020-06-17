@@ -37,7 +37,7 @@ def folder_path_of_file(file: Optional[str] = None) -> Optional[str]:
         try:
             import inspect
 
-            filef = inspect.stack()[1][1]
+            file = inspect.stack()[1][1]
         except:
             return None
 
@@ -46,8 +46,6 @@ def folder_path_of_file(file: Optional[str] = None) -> Optional[str]:
 def path_for_subpath_in_current_folder(subpath: str) -> Optional[str]:
     try:
         import inspect
-
-        caller_file_path = inspect.stack()[1][1]
 
         return os.path.join(os.path.dirname(path_of_file(inspect.stack()[1][1])), subpath)
     except:

@@ -9,7 +9,7 @@ else:
 
 setuptools.setup(
     name="kcu",
-    version="0.0.9",
+    version="0.0.10",
     author="Kristof",
     description="some python utility methods that I often use compiled in a package",
     long_description=long_description,
