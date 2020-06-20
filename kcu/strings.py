@@ -26,3 +26,8 @@ def split(string: str, by_substrings: List[str], keep_splitters: bool = True) ->
         all_splitted = new_splitted
 
     return all_splitted
+
+def to_english(s: str) -> str:
+    import unicodedata
+
+    return ''.join([c for c in unicodedata.normalize('NFD', s) if not unicodedata.combining(c)])
