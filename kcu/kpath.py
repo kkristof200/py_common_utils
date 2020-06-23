@@ -106,9 +106,14 @@ def remove(_path: str) -> bool:
     if not os.path.exists(_path):
         return False
 
-    if os.path.isdir(_path):
-        import shutil
-        
-        shutil.rmtree(_path)
-    else:
-        os.remove(_path)
+    try:
+        if os.path.isdir(_path):
+            import shutil
+
+            shutil.rmtree(_path)
+        else:
+            os.remove(_path)
+    except:
+        return False
+
+    return True
