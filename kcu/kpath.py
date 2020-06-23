@@ -103,9 +103,12 @@ def remove_extensions(_path: str) -> str:
         _path = _path.rstrip(ext)
 
 def remove(_path: str) -> bool:
-    try:
-        os.remove(_path)
-
-        return True
-    except:
+    if not os.path.exists(_path):
         return False
+
+    if os.path.isdir(_path):
+        import shutil
+        
+        shutil.rmtree(_path)
+    else:
+        os.remove(_path)
