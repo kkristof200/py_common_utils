@@ -31,3 +31,11 @@ def to_english(s: str) -> str:
     import unicodedata
 
     return ''.join([c for c in unicodedata.normalize('NFD', s) if not unicodedata.combining(c)])
+
+def htmlunescape(s: str) -> str:
+    import html
+
+    try:
+        return html.unescape(s)
+    except:
+        return s
