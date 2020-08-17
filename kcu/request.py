@@ -71,6 +71,7 @@ def request(
     max_request_try_count: int = 10,
     sleep_time: float = 2.5,
     debug: bool = False,
+    user_agent: Optional[str] = None,
     fake_useragent: bool = False
 ) -> Optional[Response]:
     current_try_count = 0
@@ -87,6 +88,7 @@ def request(
             headers=headers,
             data=data,
             debug=debug,
+            user_agent=user_agent,
             fake_useragent=fake_useragent
         )
 
@@ -104,9 +106,10 @@ def get(
     max_request_try_count: int = 10,
     sleep_time: float = 2.5,
     debug: bool = False,
+    user_agent: Optional[str] = None,
     fake_useragent: bool = False
 ) -> Optional[Response]:
-    return request(url, method=RequestMethod.GET, params=params, headers=headers, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, fake_useragent=fake_useragent)
+    return request(url, method=RequestMethod.GET, params=params, headers=headers, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, user_agent=user_agent, fake_useragent=fake_useragent)
 
 def post(
     url: str,
@@ -116,9 +119,10 @@ def post(
     max_request_try_count: int = 10,
     sleep_time: float = 2.5,
     debug: bool = False,
+    user_agent: Optional[str] = None,
     fake_useragent: bool = False
 ) -> Optional[Response]:
-    return request(url, method=RequestMethod.POST, params=params, headers=headers, data=data, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, fake_useragent=fake_useragent)
+    return request(url, method=RequestMethod.POST, params=params, headers=headers, data=data, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, user_agent=user_agent, fake_useragent=fake_useragent)
 
 def delete(
     url: str,
@@ -128,9 +132,10 @@ def delete(
     max_request_try_count: int = 10,
     sleep_time: float = 2.5,
     debug: bool = False,
+    user_agent: Optional[str] = None,
     fake_useragent: bool = False
 ) -> Optional[Response]:
-    return request(url, method=RequestMethod.DELETE, params=params, headers=headers, data=data, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, fake_useragent=fake_useragent)
+    return request(url, method=RequestMethod.DELETE, params=params, headers=headers, data=data, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, user_agent=user_agent, fake_useragent=fake_useragent)
 
 def __request(
     url: str,
@@ -139,16 +144,17 @@ def __request(
     headers: Optional[Dict] = None,
     data: Optional[Any] = None,
     debug: bool = False,
+    user_agent: Optional[str] = None,
     fake_useragent: bool = False
 ) -> Optional[Response]:
     if headers is None:
         headers = {}
 
-    if fake_useragent:    
+    if user_agent or fake_useragent:    
         headers = __headers_by_optionally_setting(
             headers,
             {
-                'User-Agent':FakeUserAgent().random,
+                'User-Agent':user_agent or FakeUserAgent().random,
                 'Accept':'*/*',
                 'Cache-Control':'no-cache',
                 'Accept-Encoding':'gzip, deflate, br',
