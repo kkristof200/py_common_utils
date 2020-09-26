@@ -95,8 +95,11 @@ def request(
         if resp is not None:
             return resp
 
+        if current_try_count >= max_request_try_count:
+            break
+
         time.sleep(sleep_time)
-    
+
     return None
 
 def get(
