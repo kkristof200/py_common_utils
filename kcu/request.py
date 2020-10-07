@@ -57,6 +57,65 @@ def __download(
         
         return False
 
+def req_download(
+    url: str,
+    path: str,
+    max_request_try_count: int = 3,
+    sleep_time: float = 2.5,
+    debug: bool = False,
+    user_agent: Optional[str] = None,
+    fake_useragent: bool = False
+) -> bool:
+    current_try_count = 0
+
+    while current_try_count < max_request_try_count:
+        current_try_count += 1
+
+        if debug:
+            print(url + ' | ' + str(current_try_count) + '/' + str(max_request_try_count))
+        
+        res = __req_download(
+            url,
+            path,
+            debug=debug,
+            user_agent=user_agent,
+            fake_useragent=fake_useragent
+        )
+
+        if res:
+            return True
+
+        time.sleep(sleep_time)
+    
+    return False
+
+def __req_download(
+    url: str, 
+    path: str,
+    debug: bool = False,
+    user_agent: Optional[str] = None,
+    fake_useragent: bool = False
+) -> bool:
+    headers = {}
+
+    if user_agent or fake_useragent:
+        headers = __headers_by_optionally_setting(headers, {'User-Agent':user_agent or FakeUserAgent().random})
+
+    try:
+        resp = requests.get(url, headers=headers, stream=True)
+
+        if resp and resp.status_code in [200, 201]:
+            with open(path, 'wb') as f:
+                for chunk in resp.iter_content(1024):
+                    f.write(chunk)
+
+                return True
+    except Exception as e:
+        if debug:
+            print(e)
+
+    return False
+
 class RequestMethod(Enum):
     GET     = 'GET'
     POST    = 'POST'
