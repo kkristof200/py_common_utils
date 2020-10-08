@@ -64,7 +64,10 @@ def req_download(
     sleep_time: float = 2.5,
     debug: bool = False,
     user_agent: Optional[str] = None,
-    fake_useragent: bool = False
+    fake_useragent: bool = False,
+    proxy_http: Optional[str] = None,
+    proxy_https: Optional[str] = None,
+    proxy_ftp: Optional[str] = None
 ) -> bool:
     current_try_count = 0
 
@@ -79,7 +82,10 @@ def req_download(
             path,
             debug=debug,
             user_agent=user_agent,
-            fake_useragent=fake_useragent
+            fake_useragent=fake_useragent,
+            proxy_http=proxy_http,
+            proxy_https=proxy_https,
+            proxy_ftp=proxy_ftp
         )
 
         if res:
@@ -94,15 +100,32 @@ def __req_download(
     path: str,
     debug: bool = False,
     user_agent: Optional[str] = None,
-    fake_useragent: bool = False
+    fake_useragent: bool = False,
+    proxy_http: Optional[str] = None,
+    proxy_https: Optional[str] = None,
+    proxy_ftp: Optional[str] = None
 ) -> bool:
     headers = {}
 
     if user_agent or fake_useragent:
         headers = __headers_by_optionally_setting(headers, {'User-Agent':user_agent or FakeUserAgent().random})
 
+    proxies = None
+
+    if proxy_http or proxy_https or proxy_ftp:
+        proxies = {}
+
+        if proxy_http:
+            proxies['http'] = proxy_http
+
+        if proxy_https:
+            proxies['https'] = proxy_https
+
+        if proxy_ftp:
+            proxies['ftp'] = proxy_ftp
+
     try:
-        resp = requests.get(url, headers=headers, stream=True)
+        resp = requests.get(url, headers=headers, proxies=proxies, stream=True)
 
         if resp and resp.status_code in [200, 201]:
             with open(path, 'wb') as f:
@@ -119,6 +142,7 @@ def __req_download(
 class RequestMethod(Enum):
     GET     = 'GET'
     POST    = 'POST'
+    PUT     = 'PUT'
     DELETE  = 'DELETE'
 
 def request(
@@ -131,7 +155,10 @@ def request(
     sleep_time: float = 2.5,
     debug: bool = False,
     user_agent: Optional[str] = None,
-    fake_useragent: bool = False
+    fake_useragent: bool = False,
+    proxy_http: Optional[str] = None,
+    proxy_https: Optional[str] = None,
+    proxy_ftp: Optional[str] = None
 ) -> Optional[Response]:
     current_try_count = 0
 
@@ -148,7 +175,10 @@ def request(
             data=data,
             debug=debug,
             user_agent=user_agent,
-            fake_useragent=fake_useragent
+            fake_useragent=fake_useragent,
+            proxy_http=proxy_http,
+            proxy_https=proxy_https,
+            proxy_ftp=proxy_ftp
         )
 
         if resp is not None:
@@ -169,9 +199,12 @@ def get(
     sleep_time: float = 2.5,
     debug: bool = False,
     user_agent: Optional[str] = None,
-    fake_useragent: bool = False
+    fake_useragent: bool = False,
+    proxy_http: Optional[str] = None,
+    proxy_https: Optional[str] = None,
+    proxy_ftp: Optional[str] = None
 ) -> Optional[Response]:
-    return request(url, method=RequestMethod.GET, params=params, headers=headers, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, user_agent=user_agent, fake_useragent=fake_useragent)
+    return request(url, method=RequestMethod.GET, params=params, headers=headers, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, user_agent=user_agent, fake_useragent=fake_useragent, proxy_http=proxy_http, proxy_https=proxy_https, proxy_ftp=proxy_ftp)
 
 def post(
     url: str,
@@ -182,9 +215,28 @@ def post(
     sleep_time: float = 2.5,
     debug: bool = False,
     user_agent: Optional[str] = None,
-    fake_useragent: bool = False
+    fake_useragent: bool = False,
+    proxy_http: Optional[str] = None,
+    proxy_https: Optional[str] = None,
+    proxy_ftp: Optional[str] = None
 ) -> Optional[Response]:
-    return request(url, method=RequestMethod.POST, params=params, headers=headers, data=data, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, user_agent=user_agent, fake_useragent=fake_useragent)
+    return request(url, method=RequestMethod.POST, params=params, headers=headers, data=data, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, user_agent=user_agent, fake_useragent=fake_useragent, proxy_http=proxy_http, proxy_https=proxy_https, proxy_ftp=proxy_ftp)
+
+def put(
+    url: str,
+    params: Optional[Dict] = None,
+    headers: Optional[Dict] = None,
+    data: Optional[Any] = None,
+    max_request_try_count: int = 10,
+    sleep_time: float = 2.5,
+    debug: bool = False,
+    user_agent: Optional[str] = None,
+    fake_useragent: bool = False,
+    proxy_http: Optional[str] = None,
+    proxy_https: Optional[str] = None,
+    proxy_ftp: Optional[str] = None
+) -> Optional[Response]:
+    return request(url, method=RequestMethod.PUT, params=params, headers=headers, data=data, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, user_agent=user_agent, fake_useragent=fake_useragent, proxy_http=proxy_http, proxy_https=proxy_https, proxy_ftp=proxy_ftp)
 
 def delete(
     url: str,
@@ -195,9 +247,12 @@ def delete(
     sleep_time: float = 2.5,
     debug: bool = False,
     user_agent: Optional[str] = None,
-    fake_useragent: bool = False
+    fake_useragent: bool = False,
+    proxy_http: Optional[str] = None,
+    proxy_https: Optional[str] = None,
+    proxy_ftp: Optional[str] = None
 ) -> Optional[Response]:
-    return request(url, method=RequestMethod.DELETE, params=params, headers=headers, data=data, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, user_agent=user_agent, fake_useragent=fake_useragent)
+    return request(url, method=RequestMethod.DELETE, params=params, headers=headers, data=data, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, user_agent=user_agent, fake_useragent=fake_useragent, proxy_http=proxy_http, proxy_https=proxy_https, proxy_ftp=proxy_ftp)
 
 def __request(
     url: str,
@@ -207,7 +262,10 @@ def __request(
     data: Optional[Any] = None,
     debug: bool = False,
     user_agent: Optional[str] = None,
-    fake_useragent: bool = False
+    fake_useragent: bool = False,
+    proxy_http: Optional[str] = None,
+    proxy_https: Optional[str] = None,
+    proxy_ftp: Optional[str] = None
 ) -> Optional[Response]:
     if headers is None:
         headers = {}
@@ -224,13 +282,27 @@ def __request(
             }
         )
 
+    proxies = None
+
+    if proxy_http or proxy_https or proxy_ftp:
+        proxies = {}
+
+        if proxy_http:
+            proxies['http'] = proxy_http
+
+        if proxy_https:
+            proxies['https'] = proxy_https
+
+        if proxy_ftp:
+            proxies['ftp'] = proxy_ftp
+
     try:
         if method == RequestMethod.GET:
-            resp = requests.get(url, params=params, headers=headers)
+            resp = requests.get(url, params=params, headers=headers, proxies=proxies)
         elif method == RequestMethod.POST:
-            resp = requests.post(url, data=data, params=params, headers=headers)
+            resp = requests.post(url, data=data, params=params, headers=headers, proxies=proxies)
         else:#elif method == RequestMethod.DELETE:
-            resp = requests.post(url, data=data, params=params, headers=headers)
+            resp = requests.post(url, data=data, params=params, headers=headers, proxies=proxies)
 
         if resp is None:
             if debug:
