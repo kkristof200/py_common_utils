@@ -294,7 +294,7 @@ def __request(
 
     proxies = None
 
-    if pproxy, roxy_http or proxy_https or proxy_ftp:
+    if proxy, proxy_http or proxy_https or proxy_ftp:
         proxies = {}
 
         if proxy_http:
