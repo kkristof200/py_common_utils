@@ -310,7 +310,10 @@ def __request(
         if method == RequestMethod.GET:
             resp = requests.get(url, params=params, headers=headers, proxies=proxies)
         elif method == RequestMethod.POST:
-            resp = requests.post(url, data=data, params=params, headers=headers, proxies=proxies)
+            if type(data) == dict:
+                resp = requests.post(url, json=data, params=params, headers=headers, proxies=proxies)
+            else:
+                resp = requests.post(url, data=data, params=params, headers=headers, proxies=proxies)
         else:#elif method == RequestMethod.DELETE:
             resp = requests.post(url, data=data, params=params, headers=headers, proxies=proxies)
 
