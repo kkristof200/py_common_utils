@@ -1,6 +1,7 @@
-from typing import Dict, Optional, Any
+from typing import Dict, Optional, Any, List
 import time, requests, os
 from enum import Enum
+from simple_multiprocessing import MultiProcess, Task
 
 from fake_useragent import FakeUserAgent
 
@@ -20,7 +21,7 @@ def download(
 
         if debug:
             print(url + ' | ' + str(current_try_count) + '/' + str(max_request_try_count))
-        
+
         res = __download(
             url,
             path,
@@ -29,9 +30,9 @@ def download(
 
         if res:
             return True
-        
+
         time.sleep(sleep_time)
-    
+
     return False
 
 def __download(
@@ -57,6 +58,40 @@ def __download(
         
         return False
 
+def req_multi_download(
+    urls_paths: Optional[Dict[str, str]] = None,
+    max_request_try_count: int = 3,
+    sleep_time: float = 2.5,
+    debug: bool = False,
+    user_agent: Optional[str] = None,
+    fake_useragent: bool = False,
+    proxy: Optional[str] = None,
+    proxy_http: Optional[str] = None,
+    proxy_https: Optional[str] = None,
+    proxy_ftp: Optional[str] = None
+) -> List[bool]:
+    mp = MultiProcess()
+
+    for url, path in urls_paths.items():
+        mp.tasks.append(
+            Task(
+                req_download,
+                url,
+                path,
+                max_request_try_count=max_request_try_count,
+                user_agent=user_agent,
+                sleep_time=sleep_time,
+                debug=debug,
+                proxy=proxy,
+                fake_useragent=fake_useragent,
+                proxy_http=proxy_http,
+                proxy_https=proxy_https,
+                proxy_ftp=proxy_ftp
+            )
+        )
+
+    return mp.solve()
+
 def req_download(
     url: str,
     path: str,
@@ -77,7 +112,7 @@ def req_download(
 
         if debug:
             print(url + ' | ' + str(current_try_count) + '/' + str(max_request_try_count))
-        
+
         res = __req_download(
             url,
             path,
@@ -94,7 +129,7 @@ def req_download(
             return True
 
         time.sleep(sleep_time)
-    
+
     return False
 
 def __req_download(
