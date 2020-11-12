@@ -60,6 +60,7 @@ def __download(
 
 def req_multi_download(
     urls_paths: Optional[Dict[str, str]] = None,
+    headers: Optional[Dict] = None,
     max_request_try_count: int = 3,
     sleep_time: float = 2.5,
     debug: bool = False,
@@ -78,6 +79,7 @@ def req_multi_download(
                 req_download,
                 url,
                 path,
+                headers=headers,
                 max_request_try_count=max_request_try_count,
                 user_agent=user_agent,
                 sleep_time=sleep_time,
@@ -95,6 +97,7 @@ def req_multi_download(
 def req_download(
     url: str,
     path: str,
+    headers: Optional[Dict] = None,
     max_request_try_count: int = 3,
     sleep_time: float = 2.5,
     debug: bool = False,
@@ -136,6 +139,7 @@ def __req_download(
     url: str, 
     path: str,
     debug: bool = False,
+    headers: Optional[Dict] = None,
     user_agent: Optional[str] = None,
     fake_useragent: bool = False,
     proxy: Optional[str] = None,
@@ -143,7 +147,7 @@ def __req_download(
     proxy_https: Optional[str] = None,
     proxy_ftp: Optional[str] = None
 ) -> bool:
-    headers = {}
+    headers = headers or {}
 
     if user_agent or fake_useragent:
         headers = __headers_by_optionally_setting(headers, {'User-Agent':user_agent or FakeUserAgent().random})
