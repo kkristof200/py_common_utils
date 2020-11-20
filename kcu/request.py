@@ -330,20 +330,32 @@ def __request(
                 'Connection':'keep-alive'
             }
         )
+    
+    if proxy:
+        proxy = proxy.lstrip('https://').lstrip('http://').lstrip('ftp://')
+    
+    if proxy_http or proxy:
+        proxy_http = (proxy_http or proxy).lstrip('http://')
+
+    if proxy_https or proxy:
+        proxy_https = (proxy_https or proxy).lstrip('https://')
+
+    if proxy_ftp or proxy:
+        proxy_ftp = (proxy_ftp or proxy).lstrip('ftp://')
 
     proxies = None
 
-    if proxy or proxy_http or proxy_https or proxy_ftp:
+    if proxy_http or proxy_https or proxy_ftp:
         proxies = {}
 
         if proxy_http:
-            proxies['http'] = proxy_http or proxy
+            proxies['http'] = 'http://{}'.format(proxy_http)
 
         if proxy_https:
-            proxies['https'] = proxy_https or proxy
+            proxies['https'] = 'https://{}'.format(proxy_https)
 
         if proxy_ftp:
-            proxies['ftp'] = proxy_ftp or proxy
+            proxies['ftp'] = 'ftp://{}'.format(proxy_ftp)
 
     try:
         if method == RequestMethod.GET:
