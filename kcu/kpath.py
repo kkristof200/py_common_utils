@@ -1,32 +1,112 @@
-from typing import List, Optional
+from typing import List, Tuple, Optional
 import os
 
 # allowed_extensions is an array, like ['jpg', 'jpeg', 'png']
 def file_paths_from_folder(
     root_folder_path: str, 
     allowed_extensions: Optional[List[str]] = None, 
-    recursive: bool = True
+    ignored_extensions: Optional[List[str]] = ['.ds_store'], 
+    depth: int = -1,
+    recursive: bool = True, #kept for convenience
 ) -> List[str]:
-    root_folder_path = os.path.abspath(root_folder_path)
+    root_folder_path = os.path.abspath(os.path.normpath(root_folder_path))
     file_paths = []
+    current_depth = 0
 
-    for (dir_path, _, file_names) in os.walk(root_folder_path):
-        abs_dir_path = os.path.abspath(dir_path)
+    if allowed_extensions:
+        allowed_extensions = [ae.lower() for ae in allowed_extensions]
+    
+    if ignored_extensions:
+        ignored_extensions = [ie.lower() for ie in ignored_extensions]
 
-        for file_name in file_names:
-            if allowed_extensions is not None and len(allowed_extensions) > 0:
-                for extension in allowed_extensions:
-                    if file_name.lower().endswith(extension.lower()):
-                        file_paths.append(os.path.join(abs_dir_path, file_name))
+    if recursive:
+        depth = -1
+    elif depth <= 0 and depth != -1:
+        depth = 1
 
-                        break
-            else:
-                file_paths.append(os.path.join(abs_dir_path, file_name))
-        
-        if not recursive:
-            break
+    def get_paths(src_folder_paths: List[str]) -> Tuple[List[str], List[str]]:
+        _folder_paths = []
+        _file_paths = []
+
+        for src_folder_path in src_folder_paths:
+            for (_, dir_names, file_names) in os.walk(src_folder_path):
+                _folder_paths.extend([os.path.join(src_folder_path, dir_name) for dir_name in dir_names])
+
+                for file_name in file_names:
+                    should_add = True
+                    lower_file_name = file_name.lower()
+
+                    if allowed_extensions:
+                        for allowed_extension in allowed_extensions:
+                            if not lower_file_name.endswith(allowed_extension):
+                                should_add = False
+
+                                break
+                    
+                    if not should_add:
+                        continue
+
+                    if ignored_extensions:
+                        for ignored_extension in ignored_extensions:
+                            if lower_file_name.endswith(ignored_extension):
+                                should_add = False
+
+                                break
+
+                    if should_add:
+                        _file_paths.append(os.path.join(src_folder_path, file_name))
+
+                break
+
+        return _folder_paths, _file_paths
+
+    recent_folder_paths = [root_folder_path]
+
+    while current_depth < depth or depth == -1:
+        current_depth += 1
+        recent_folder_paths, new_file_paths = get_paths(recent_folder_paths)
+
+        if len(recent_folder_paths) == 0:
+            return file_paths
+
+        file_paths.extend(new_file_paths)
     
     return file_paths
+
+def folder_paths_from_folder(
+    root_folder_path: str, 
+    depth: int = -1
+) -> List[str]:
+    root_folder_path = os.path.abspath(root_folder_path)
+    folder_paths = []
+    current_depth = 0
+
+    if depth <= 0 and depth != -1:
+        depth = 1
+
+    def get_folder_paths(src_folder_paths: List[str]) -> List[str]:
+        _folder_paths = []
+
+        for src_folder_path in src_folder_paths:
+            for (_, dir_names, _) in os.walk(src_folder_path):
+                _folder_paths.extend([os.path.join(src_folder_path, dir_name) for dir_name in dir_names])
+
+                break
+
+        return _folder_paths
+    
+    recent_folder_paths = [root_folder_path]
+
+    while current_depth < depth or depth == -1:
+        current_depth += 1
+        recent_folder_paths = get_folder_paths(recent_folder_paths)
+
+        if len(recent_folder_paths) == 0:
+            return folder_paths
+
+        folder_paths.extend(recent_folder_paths)
+
+    return folder_paths
 
 def path_of_file(f: str) -> str:
     return os.path.abspath(f)
