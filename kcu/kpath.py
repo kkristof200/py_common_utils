@@ -9,6 +9,10 @@ def file_paths_from_folder(
     depth: int = -1,
     recursive: bool = True, #kept for convenience
 ) -> List[str]:
+    """
+        depth (int, optional): How far to check in folders. -1 means recursive, all the way down. Defaults to -1 (recursive).
+        recursive (bool, optional): If True, sets depth to -1. Kept for convenience. Defaults to True.
+    """
     root_folder_path = os.path.abspath(os.path.normpath(root_folder_path))
     file_paths = []
     current_depth = 0
@@ -77,6 +81,9 @@ def folder_paths_from_folder(
     root_folder_path: str, 
     depth: int = -1
 ) -> List[str]:
+    """
+        depth (int, optional): How far to check in folders. -1 means recursive, all the way down. Defaults to -1 (recursive).
+    """
     root_folder_path = os.path.abspath(root_folder_path)
     folder_paths = []
     current_depth = 0
