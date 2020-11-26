@@ -1,11 +1,11 @@
-from typing import List, Tuple, Optional
-import os
+from typing import List, Tuple, Union, Optional
+import os, copy
 
 # allowed_extensions is an array, like ['jpg', 'jpeg', 'png']
 def file_paths_from_folder(
-    root_folder_path: str, 
-    allowed_extensions: Optional[List[str]] = None, 
-    ignored_extensions: Optional[List[str]] = ['.ds_store'], 
+    root_folder_path: Union[str, List[str]],
+    allowed_extensions: Optional[List[str]] = None,
+    ignored_extensions: Optional[List[str]] = ['.ds_store'],
     depth: int = -1,
     recursive: bool = True, #kept for convenience
 ) -> List[str]:
@@ -13,7 +13,10 @@ def file_paths_from_folder(
         depth (int, optional): How far to check in folders. -1 means recursive, all the way down. Defaults to -1 (recursive).
         recursive (bool, optional): If True, sets depth to -1. Kept for convenience. Defaults to True.
     """
-    root_folder_path = os.path.abspath(os.path.normpath(root_folder_path))
+    if type(root_folder_path) == str:
+        root_folder_path = [root_folder_path]
+
+    root_folder_paths = [os.path.abspath(os.path.normpath(fp)) for fp in root_folder_path]
     file_paths = []
     current_depth = 0
 
@@ -64,7 +67,7 @@ def file_paths_from_folder(
 
         return _folder_paths, _file_paths
 
-    recent_folder_paths = [root_folder_path]
+    recent_folder_paths = copy.deepcopy(root_folder_paths)
 
     while current_depth < depth or depth == -1:
         current_depth += 1
@@ -78,13 +81,16 @@ def file_paths_from_folder(
     return file_paths
 
 def folder_paths_from_folder(
-    root_folder_path: str, 
+    root_folder_path: Union[str, List[str]],
     depth: int = -1
 ) -> List[str]:
     """
         depth (int, optional): How far to check in folders. -1 means recursive, all the way down. Defaults to -1 (recursive).
     """
-    root_folder_path = os.path.abspath(root_folder_path)
+    if type(root_folder_path) == str:
+        root_folder_path = [root_folder_path]
+
+    root_folder_paths = [os.path.abspath(os.path.normpath(fp)) for fp in root_folder_path]
     folder_paths = []
     current_depth = 0
 
@@ -102,7 +108,7 @@ def folder_paths_from_folder(
 
         return _folder_paths
     
-    recent_folder_paths = [root_folder_path]
+    recent_folder_paths = copy.deepcopy(root_folder_paths)
 
     while current_depth < depth or depth == -1:
         current_depth += 1
