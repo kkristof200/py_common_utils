@@ -9,14 +9,14 @@ else:
 
 setuptools.setup(
     name="kcu",
-    version="0.0.30",
+    version="0.0.31",
     author="Kristof",
     description="some python utility methods that I often use compiled in a package",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/kkristof200/py_common_utils",
     packages=setuptools.find_packages(),
-    install_requires=["requests", "fake_useragent", "simple_multiprocessing"],
+    install_requires=["fake_useragent", "simple_multiprocessing", "requests"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

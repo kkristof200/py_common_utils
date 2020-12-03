@@ -44,11 +44,12 @@ def file_paths_from_folder(
                         should_add = False
 
                         for allowed_extension in allowed_extensions:
+                            print(lower_file_name, allowed_extension)
                             if lower_file_name.endswith(allowed_extension):
                                 should_add = True
 
                                 break
-                    
+
                     if not should_add:
                         continue
 
@@ -71,11 +72,10 @@ def file_paths_from_folder(
     while current_depth < depth or depth == -1:
         current_depth += 1
         recent_folder_paths, new_file_paths = get_paths(recent_folder_paths)
+        file_paths.extend(new_file_paths)
 
         if len(recent_folder_paths) == 0:
             return file_paths
-
-        file_paths.extend(new_file_paths)
     
     return file_paths
 
