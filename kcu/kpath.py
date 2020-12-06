@@ -44,7 +44,6 @@ def file_paths_from_folder(
                         should_add = False
 
                         for allowed_extension in allowed_extensions:
-                            print(lower_file_name, allowed_extension)
                             if lower_file_name.endswith(allowed_extension):
                                 should_add = True
 
