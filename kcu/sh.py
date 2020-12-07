@@ -5,33 +5,12 @@ def sh(
     cmd: str,
     debug: bool = False
 ) -> str:
-    import shlex, subprocess
-
+    import subprocess
+    
     if debug:
         print(cmd)
 
-    process = subprocess.Popen(
-        shlex.split(cmd),
-        stdout=subprocess.PIPE,
-        universal_newlines=True
-    )
-
-    output_lines = []
-
-    while True:
-        output = process.stdout.readline().rstrip()
-        output_lines.append(output)
-
-        if debug and output:
-            print(output)
-
-        return_code = process.poll()
-
-        if return_code is not None:
-            if debug:
-                print('return_code:', return_code)
-
-            return '\n'.join(output_lines)
+    return subprocess.getoutput(cmd)
 
 def path(path: str) -> str:
     return os.path.realpath(path.replace(' ', '\\ ').replace('\\\\ ', '\\ '))
