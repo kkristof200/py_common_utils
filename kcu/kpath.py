@@ -1,5 +1,6 @@
-from typing import List, Tuple, Optional
-import os
+from typing import List, Tuple, Optional, Union
+import tempfile, platform, os, uuid
+
 
 # allowed_extensions is an array, like ['jpg', 'jpeg', 'png']
 def file_paths_from_folder(
@@ -153,6 +154,37 @@ def temp_path_for_path(_path: str) -> str:
 
         if not os.path.exists(proposed_path):
             return proposed_path
+
+def new_tempdir(
+    path_src: Optional[str] = None,
+    appending_subpath: Optional[Union[str, List[str]]] = None,
+    append_random_subfolder_path: bool = True,
+    use_system_tmp_folder_for_macos: bool = False,
+    create_folder_if_not_exists: bool = True
+)-> str:
+    if not path_src:
+        path_src = '/tmp' if platform.system() == 'Darwin' and use_system_tmp_folder_for_macos else tempfile.gettempdir()
+
+    if os.path.isfile(path_src):
+        path_src = folder_path_of_file(path_src)
+
+    if appending_subpath:
+        if type(appending_subpath) == list:
+            appending_subpath = os.path.sep.join(appending_subpath)
+
+        path_src = os.path.join(path_src, appending_subpath)
+
+    if append_random_subfolder_path:
+        while True:
+            path_src = os.path.join(path_src, 'temp-'+str(uuid.uuid4()))
+
+            if not os.path.exists(path_src):
+                break
+
+    if create_folder_if_not_exists and not os.path.exists(path_src):
+        os.makedirs(path_src)
+
+    return path_src
 
 def file_name(_path: str, include_extension: bool = True) -> str:
     basename = os.path.basename(_path)
