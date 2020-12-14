@@ -160,7 +160,7 @@ def new_tempdir(
     appending_subpath: Optional[Union[str, List[str]]] = None,
     append_random_subfolder_path: bool = True,
     use_system_tmp_folder_for_macos: bool = False,
-    create_folder_if_not_exists: bool = True
+    create_folder_if_not_exists: bool = False
 )-> str:
     if not path_src:
         path_src = '/tmp' if platform.system() == 'Darwin' and use_system_tmp_folder_for_macos else tempfile.gettempdir()
