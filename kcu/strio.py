@@ -13,7 +13,8 @@ import os
 def save(
     path: str,
     content: str,
-    encoding: str = 'utf8'
+    encoding: str = 'utf8',
+    debug: bool = False
 ) -> bool:
     try:
         data = None
@@ -28,20 +29,29 @@ def save(
 
             return True
     except Exception as e:
-        print(e)
+        if debug:
+            print(e)
 
         return False
 
 def load(
     path: str,
-    encoding: str = 'utf8'
+    encoding: str = 'utf8',
+    debug: bool = False
 ) -> Optional[str]:
+    if not os.path.exists(path):
+        if debug:
+            print('File at \'{}\' does not exist'.format(path))
+
+        return None
+
     try:
         with open(path, 'rb') as file:
             binary_content = file.read()
 
         return binary_content if not encoding else binary_content.decode(encoding)
     except Exception as e:
-        print(e)
+        if debug:
+            print(e)
 
         return None
