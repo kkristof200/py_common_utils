@@ -69,7 +69,8 @@ def req_multi_download(
     proxy: Optional[str] = None,
     proxy_http: Optional[str] = None,
     proxy_https: Optional[str] = None,
-    proxy_ftp: Optional[str] = None
+    proxy_ftp: Optional[str] = None,
+    allow_redirects: bool = True
 ) -> List[bool]:
     mp = MultiProcess()
 
@@ -88,7 +89,8 @@ def req_multi_download(
                 fake_useragent=fake_useragent,
                 proxy_http=proxy_http,
                 proxy_https=proxy_https,
-                proxy_ftp=proxy_ftp
+                proxy_ftp=proxy_ftp,
+                allow_redirects=allow_redirects
             )
         )
 
@@ -106,7 +108,8 @@ def req_download(
     proxy: Optional[str] = None,
     proxy_http: Optional[str] = None,
     proxy_https: Optional[str] = None,
-    proxy_ftp: Optional[str] = None
+    proxy_ftp: Optional[str] = None,
+    allow_redirects: bool = True
 ) -> bool:
     current_try_count = 0
 
@@ -125,7 +128,8 @@ def req_download(
             proxy=proxy,
             proxy_http=proxy_http,
             proxy_https=proxy_https,
-            proxy_ftp=proxy_ftp
+            proxy_ftp=proxy_ftp,
+            allow_redirects=allow_redirects
         )
 
         if res:
@@ -145,7 +149,8 @@ def __req_download(
     proxy: Optional[str] = None,
     proxy_http: Optional[str] = None,
     proxy_https: Optional[str] = None,
-    proxy_ftp: Optional[str] = None
+    proxy_ftp: Optional[str] = None,
+    allow_redirects: bool = True
 ) -> bool:
     headers = headers or {}
 
@@ -201,7 +206,8 @@ def request(
     proxy: Optional[str] = None,
     proxy_http: Optional[str] = None,
     proxy_https: Optional[str] = None,
-    proxy_ftp: Optional[str] = None
+    proxy_ftp: Optional[str] = None,
+    allow_redirects: bool = True
 ) -> Optional[Response]:
     current_try_count = 0
 
@@ -222,7 +228,8 @@ def request(
             proxy=proxy,
             proxy_http=proxy_http,
             proxy_https=proxy_https,
-            proxy_ftp=proxy_ftp
+            proxy_ftp=proxy_ftp,
+            allow_redirects=allow_redirects
         )
 
         if resp is not None:
@@ -247,9 +254,11 @@ def get(
     proxy: Optional[str] = None,
     proxy_http: Optional[str] = None,
     proxy_https: Optional[str] = None,
-    proxy_ftp: Optional[str] = None
+    proxy_ftp: Optional[str] = None,
+    allow_redirects: bool = True
 ) -> Optional[Response]:
-    return request(url, method=RequestMethod.GET, params=params, headers=headers, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, user_agent=user_agent, fake_useragent=fake_useragent, proxy=proxy, proxy_http=proxy_http, proxy_https=proxy_https, proxy_ftp=proxy_ftp)
+    return request(url, method=RequestMethod.GET, params=params, headers=headers, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, user_agent=user_agent, fake_useragent=fake_useragent, proxy=proxy, proxy_http=proxy_http, proxy_https=proxy_https, proxy_ftp=proxy_ftp,
+    allow_redirects=allow_redirects)
 
 def post(
     url: str,
@@ -264,9 +273,11 @@ def post(
     proxy: Optional[str] = None,
     proxy_http: Optional[str] = None,
     proxy_https: Optional[str] = None,
-    proxy_ftp: Optional[str] = None
+    proxy_ftp: Optional[str] = None,
+    allow_redirects: bool = True
 ) -> Optional[Response]:
-    return request(url, method=RequestMethod.POST, params=params, headers=headers, data=data, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, user_agent=user_agent, fake_useragent=fake_useragent, proxy=proxy, proxy_http=proxy_http, proxy_https=proxy_https, proxy_ftp=proxy_ftp)
+    return request(url, method=RequestMethod.POST, params=params, headers=headers, data=data, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, user_agent=user_agent, fake_useragent=fake_useragent, proxy=proxy, proxy_http=proxy_http, proxy_https=proxy_https, proxy_ftp=proxy_ftp,
+    allow_redirects=allow_redirects)
 
 def put(
     url: str,
@@ -281,9 +292,11 @@ def put(
     proxy: Optional[str] = None,
     proxy_http: Optional[str] = None,
     proxy_https: Optional[str] = None,
-    proxy_ftp: Optional[str] = None
+    proxy_ftp: Optional[str] = None,
+    allow_redirects: bool = True
 ) -> Optional[Response]:
-    return request(url, method=RequestMethod.PUT, params=params, headers=headers, data=data, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, user_agent=user_agent, fake_useragent=fake_useragent, proxy=proxy, proxy_http=proxy_http, proxy_https=proxy_https, proxy_ftp=proxy_ftp)
+    return request(url, method=RequestMethod.PUT, params=params, headers=headers, data=data, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, user_agent=user_agent, fake_useragent=fake_useragent, proxy=proxy, proxy_http=proxy_http, proxy_https=proxy_https, proxy_ftp=proxy_ftp,
+    allow_redirects=allow_redirects)
 
 def delete(
     url: str,
@@ -298,9 +311,11 @@ def delete(
     proxy: Optional[str] = None,
     proxy_http: Optional[str] = None,
     proxy_https: Optional[str] = None,
-    proxy_ftp: Optional[str] = None
+    proxy_ftp: Optional[str] = None,
+    allow_redirects: bool = True
 ) -> Optional[Response]:
-    return request(url, method=RequestMethod.DELETE, params=params, headers=headers, data=data, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, user_agent=user_agent, fake_useragent=fake_useragent, proxy=proxy, proxy_http=proxy_http, proxy_https=proxy_https, proxy_ftp=proxy_ftp)
+    return request(url, method=RequestMethod.DELETE, params=params, headers=headers, data=data, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, user_agent=user_agent, fake_useragent=fake_useragent, proxy=proxy, proxy_http=proxy_http, proxy_https=proxy_https, proxy_ftp=proxy_ftp,
+    allow_redirects=allow_redirects)
 
 def __request(
     url: str,
@@ -314,7 +329,8 @@ def __request(
     proxy: Optional[str] = None,
     proxy_http: Optional[str] = None,
     proxy_https: Optional[str] = None,
-    proxy_ftp: Optional[str] = None
+    proxy_ftp: Optional[str] = None,
+    allow_redirects: bool = True
 ) -> Optional[Response]:
     if headers is None:
         headers = {}
@@ -362,11 +378,11 @@ def __request(
             resp = requests.get(url, params=params, headers=headers, proxies=proxies)
         elif method == RequestMethod.POST:
             if type(data) == dict or type(data) == list:
-                resp = requests.post(url, json=data, params=params, headers=headers, proxies=proxies)
+                resp = requests.post(url, json=data, params=params, headers=headers, proxies=proxies, allow_redirects=allow_redirects)
             else:
-                resp = requests.post(url, data=data, params=params, headers=headers, proxies=proxies)
+                resp = requests.post(url, data=data, params=params, headers=headers, proxies=proxies, allow_redirects=allow_redirects)
         else:#elif method == RequestMethod.DELETE:
-            resp = requests.post(url, data=data, params=params, headers=headers, proxies=proxies)
+            resp = requests.post(url, data=data, params=params, headers=headers, proxies=proxies, allow_redirects=allow_redirects)
 
         if resp is None:
             if debug:
