@@ -13,7 +13,7 @@ def sh(
     return subprocess.getoutput(cmd)
 
 def path(path: str) -> str:
-    return os.path.realpath(path.replace(' ', '\\ ').replace('\\\\ ', '\\ '))
+    return path.replace(' ', '\\ ').replace('\\\\ ', '\\ ')
 
 def pwd(debug: bool = False) -> str:
     return sh('pwd', debug=debug)
