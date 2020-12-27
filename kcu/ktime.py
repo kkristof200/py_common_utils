@@ -23,7 +23,7 @@ def hours_till(h_utc: float) -> float:
     return seconds_till(h_utc*3600)/3600
 
 def seconds_till(s_utc: float) -> float:
-    now_s = cls.__current_sec_utc()
+    now_s = current_sec_utc()
 
     if s_utc >= now_s:
         return s_utc - now_s
