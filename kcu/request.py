@@ -373,7 +373,7 @@ def __request(
         if proxy_ftp:
             proxies['ftp'] = 'ftp://{}'.format(proxy_ftp)
 
-    params = {k:v for k, v in params.items() if k and v is not None}
+    params = {k:v for k, v in params.items() if k and v is not None} if params else None
 
     try:
         if method == RequestMethod.GET:
