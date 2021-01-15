@@ -1,9 +1,52 @@
-def seconds_to_time_str(seconds: float) -> str:
-    hours = int(seconds/3600)
-    seconds -= hours*3600
+# --------------------------------------------------------------- Imports ---------------------------------------------------------------- #
 
-    minutes = int(seconds/60)
-    seconds -= minutes*60
+# System
+from datetime import datetime
+import time as builtin_time
+
+# ---------------------------------------------------------------------------------------------------------------------------------------- #
+
+
+
+# ---------------------------------------------------------- Public properties ----------------------------------------------------------- #
+
+seconds_in_minute = 60
+minutes_in_hour = 60
+hours_in_day = 24
+days_in_week = 7
+days_in_year = 365 # 366
+weeks_in_year = 52
+
+seconds_in_hour = seconds_in_minute * minutes_in_hour
+seconds_in_day = seconds_in_hour * hours_in_day
+seconds_in_week = seconds_in_day * days_in_week
+seconds_in_year = seconds_in_day * days_in_year
+
+minutes_in_day = minutes_in_hour * hours_in_day
+minutes_in_week = minutes_in_day * days_in_week
+minutes_in_year = minutes_in_day * days_in_year
+
+
+# ------------------------------------------------------------ Public methods ------------------------------------------------------------ #
+
+def time(utc: bool = False) -> float:
+    return builtin_time.time() if not utc else datetime.utcnow().timestammp()
+
+def today(utc: bool = False) -> int:
+    return now().day
+
+def time_utc() -> float:
+    return time(utc=True)
+
+def today_utc() -> int:
+    return today(utc=True)
+
+def seconds_to_time_str(seconds: float) -> str:
+    hours = int(seconds/seconds_in_hour)
+    seconds -= hours*seconds_in_hour
+
+    minutes = int(seconds/seconds_in_minute)
+    seconds -= minutes*seconds_in_minute
 
     millis = seconds - int(seconds)
     seconds = int(seconds)
@@ -34,44 +77,45 @@ def seconds_to_time_str(seconds: float) -> str:
 def time_str_to_seconds(time_str: str) -> float:
     return sum([float(c) * pow(60, i) for i, c in enumerate(reversed(time_str.split(':')))])
 
-def is_between_hours_utc(start_h_utc: float, stop_h_utc: float) -> bool:
-    return is_between_seconds_utc(start_h_utc*3600, stop_h_utc*3600)
+def is_between_hours(start_h: float, stop_h: float, utc: bool = False) -> bool:
+    return is_between_seconds(start_h*seconds_in_hour, stop_h*seconds_in_hour, utc=utc)
 
-def is_between_seconds_utc(start_s_utc: float, stop_s_utc: float) -> bool:
-        s_in_day = 60*60*24
+def is_between_seconds(start_s: float, stop_s: float, utc: bool = False) -> bool:
+        if start_s >= seconds_in_day:
+            start_s -= seconds_in_day
 
-        if start_s_utc >= s_in_day:
-            start_s_utc -= s_in_day
+        if stop_s >= seconds_in_day:
+            stop_s -= seconds_in_day
 
-        if stop_s_utc >= s_in_day:
-            stop_s_utc -= s_in_day
+        now_s = today_current_sec(utc=utc)
 
-        now_s = current_sec_utc()
-
-        if start_s_utc < stop_s_utc:
-            return now_s >= start_s_utc and now_s < stop_s_utc
-        elif start_s_utc > stop_s_utc:
-            return now_s < start_s_utc or now_s >= stop_s_utc
+        if start_s < stop_s:
+            return now_s >= start_s and now_s < stop_s
+        elif start_s > stop_s:
+            return now_s < start_s or now_s >= stop_s
 
         return False
 
-def hours_till(h_utc: float) -> float:
-    return seconds_till(h_utc*3600)/3600
+def hours_till(h: float, utc: bool = False) -> float:
+    return seconds_till(h*seconds_in_hour, utc=utc)/seconds_in_hour
 
-def seconds_till(s_utc: float) -> float:
-    now_s = current_sec_utc()
+def seconds_till(s: float, utc: bool = False) -> float:
+    now_s = today_current_hour()
 
-    if s_utc >= now_s:
-        return s_utc - now_s
+    if s >= now_s:
+        return s - now_s
 
-    return 24*3600 - now_s + s_utc
+    return seconds_in_day - now_s + s
 
-def current_hour_utc() -> float:
-    return current_sec_utc() / 3600
+def today_current_hour(utc: bool = False) -> float:
+    return today_current_sec(utc=utc) / seconds_in_hour
 
-def current_sec_utc() -> float:
-    from datetime import datetime
+def today_current_sec(utc: bool = False) -> float:
+    _now = now(utc)
 
-    now = datetime.utcnow()
+    return _now.hour*seconds_in_hour + _now.minute*seconds_in_minute + _now.second
 
-    return now.hour*3600 + now.minute*60 + now.second
+def now(utc: bool = False):# -> datetime:
+    return datetime.utcnow() if utc else datetime.now()
+
+# ---------------------------------------------------------------------------------------------------------------------------------------- #
