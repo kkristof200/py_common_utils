@@ -30,10 +30,10 @@ minutes_in_year = minutes_in_day * days_in_year
 # ------------------------------------------------------------ Public methods ------------------------------------------------------------ #
 
 def time(utc: bool = False) -> float:
-    return builtin_time.time() if not utc else datetime.utcnow().timestammp()
+    return datetime.utcnow().timestammp() if utc else builtin_time.time()
 
 def today(utc: bool = False) -> int:
-    return now().day
+    return now(utc=utc).day
 
 def time_utc() -> float:
     return time(utc=True)
@@ -96,11 +96,11 @@ def is_between_seconds(start_s: float, stop_s: float, utc: bool = False) -> bool
 
         return False
 
-def hours_till(h: float, utc: bool = False) -> float:
-    return seconds_till(h*seconds_in_hour, utc=utc)/seconds_in_hour
+def today_hours_till(h: float, utc: bool = False) -> float:
+    return today_seconds_till(h*seconds_in_hour, utc=utc)/seconds_in_hour
 
-def seconds_till(s: float, utc: bool = False) -> float:
-    now_s = today_current_hour()
+def today_seconds_till(s: float, utc: bool = False) -> float:
+    now_s = today_current_sec(utc=utc)
 
     if s >= now_s:
         return s - now_s
