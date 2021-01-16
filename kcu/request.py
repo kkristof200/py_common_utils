@@ -70,7 +70,8 @@ def req_multi_download(
     proxy_http: Optional[str] = None,
     proxy_https: Optional[str] = None,
     proxy_ftp: Optional[str] = None,
-    allow_redirects: bool = True
+    allow_redirects: bool = True,
+    max_concurent_processes: Optional[int] = None
 ) -> List[bool]:
     mp = MultiProcess()
 
@@ -94,7 +95,7 @@ def req_multi_download(
             )
         )
 
-    return mp.solve()
+    return mp.solve(max_concurent_processes=max_concurent_processes)
 
 def req_download(
     url: str,
