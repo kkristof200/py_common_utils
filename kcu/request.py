@@ -71,7 +71,8 @@ def req_multi_download(
     proxy_https: Optional[str] = None,
     proxy_ftp: Optional[str] = None,
     allow_redirects: bool = True,
-    max_concurent_processes: Optional[int] = None
+    max_concurent_processes: Optional[int] = None,
+    request_timeout: Optional[float] = None
 ) -> List[bool]:
     mp = MultiProcess()
 
@@ -91,7 +92,8 @@ def req_multi_download(
                 proxy_http=proxy_http,
                 proxy_https=proxy_https,
                 proxy_ftp=proxy_ftp,
-                allow_redirects=allow_redirects
+                allow_redirects=allow_redirects,
+                timeout=request_timeout
             )
         )
 
@@ -110,7 +112,8 @@ def req_download(
     proxy_http: Optional[str] = None,
     proxy_https: Optional[str] = None,
     proxy_ftp: Optional[str] = None,
-    allow_redirects: bool = True
+    allow_redirects: bool = True,
+    timeout: Optional[float] = None
 ) -> bool:
     current_try_count = 0
 
@@ -130,7 +133,8 @@ def req_download(
             proxy_http=proxy_http,
             proxy_https=proxy_https,
             proxy_ftp=proxy_ftp,
-            allow_redirects=allow_redirects
+            allow_redirects=allow_redirects,
+            timeout=timeout
         )
 
         if res:
@@ -151,7 +155,8 @@ def __req_download(
     proxy_http: Optional[str] = None,
     proxy_https: Optional[str] = None,
     proxy_ftp: Optional[str] = None,
-    allow_redirects: bool = True
+    allow_redirects: bool = True,
+    timeout: Optional[float] = None
 ) -> bool:
     headers = headers or {}
 
@@ -173,7 +178,7 @@ def __req_download(
             proxies['ftp'] = proxy_ftp or proxy
 
     try:
-        resp = requests.get(url, headers=headers, proxies=proxies, stream=True)
+        resp = requests.get(url, headers=headers, proxies=proxies, stream=True, timeout=timeout)
 
         if resp and resp.status_code in [200, 201]:
             with open(path, 'wb') as f:
