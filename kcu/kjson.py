@@ -1,5 +1,17 @@
+# --------------------------------------------------------------- Imports ---------------------------------------------------------------- #
+
+# System
 from typing import Union, Optional, Dict, List, Tuple, Any
-import json, builtins
+import json, builtins, os
+
+# Pip
+from .filelock import FileLock
+
+# ---------------------------------------------------------------------------------------------------------------------------------------- #
+
+
+
+# ---------------------------------------------------------- Public properties ----------------------------------------------------------- #
 
 JSONData = Union[
     str, int, float, bool,
@@ -7,6 +19,9 @@ JSONData = Union[
     List[Any],
     Tuple[Any]
 ]
+
+
+# ------------------------------------------------------------ Public methods ------------------------------------------------------------ #
 
 def load(
     path: str,
@@ -28,12 +43,44 @@ def load(
     
     return obj
 
+def load_sync(
+    path: str,
+    default_value: Optional[JSONData] = None,
+    save_if_not_exists: bool = False,
+    timeout: Optional[float] = None
+) -> Optional[JSONData]:
+    try:
+        with FileLock(path, timeout=timeout):
+            return load(path=path, default_value=default_value, save_if_not_exists=save_if_not_exists)
+    except Exception as e:
+        builtins.print('ERROR - kjson.load_sync(\'{}\')'.format(path), e)
+
+        return None
+
 def save(
     path: str,
     obj: Optional[JSONData]
-) -> None:
+) -> bool:
     with open(path, 'w') as file:
         json.dump(obj, file, indent=4)
 
+    return os.path.exists(path)
+
+def save_sync(
+    path: str,
+    obj: Optional[JSONData],
+    timeout: Optional[float] = None
+) -> bool:
+    try:
+        with FileLock(path, timeout=timeout):
+            return save(path=path, obj=obj)
+    except Exception as e:
+        builtins.print('ERROR - kjson.save_sync(\'{}\')'.format(path), e)
+
+        return False
+
 def print(obj: JSONData) -> None:
     builtins.print(json.dumps(obj, indent=4))
+
+
+# ---------------------------------------------------------------------------------------------------------------------------------------- #

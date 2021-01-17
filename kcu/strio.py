@@ -4,6 +4,9 @@
 from typing import Optional
 import os
 
+# Local
+from .filelock import FileLock
+
 # ---------------------------------------------------------------------------------------------------------------------------------------- #
 
 
@@ -34,6 +37,22 @@ def save(
 
         return False
 
+def save_sync(
+    path: str,
+    content: str,
+    encoding: str = 'utf8',
+    timeout: Optional[float] = None,
+    debug: bool = False
+) -> bool:
+    try:
+        with FileLock(path, timeout=timeout):
+            return save(path=path, content=content, debug=debug)
+    except Exception as e:
+        if debug:
+            print('ERROR - strio.save_sync(\'{}\')'.format(path), e)
+
+        return False
+
 def load(
     path: str,
     encoding: str = 'utf8',
@@ -55,3 +74,20 @@ def load(
             print(e)
 
         return None
+
+def load_sync(
+    path: str,
+    encoding: str = 'utf8',
+    timeout: Optional[float] = None,
+    debug: bool = False
+) -> Optional[str]:
+    try:
+        with FileLock(path, timeout=timeout):
+            return load(path=path, encoding=encoding, debug=debug)
+    except Exception as e:
+        if debug:
+            print('ERROR - strio.load_sync(\'{}\')'.format(path), e)
+
+        return None
+
+# ---------------------------------------------------------------------------------------------------------------------------------------- #
