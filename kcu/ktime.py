@@ -30,7 +30,7 @@ minutes_in_year = minutes_in_day * days_in_year
 # ------------------------------------------------------------ Public methods ------------------------------------------------------------ #
 
 def time(utc: bool = False) -> float:
-    return datetime.utcnow().timestammp() if utc else builtin_time.time()
+    return datetime.utcnow().timestamp() if utc else builtin_time.time()
 
 def today(utc: bool = False) -> int:
     return now(utc=utc).day
