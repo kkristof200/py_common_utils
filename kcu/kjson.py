@@ -1,7 +1,7 @@
 # --------------------------------------------------------------- Imports ---------------------------------------------------------------- #
 
 # System
-from typing import Union, Optional, Dict, List, Tuple, Any
+from typing import Union, Optional, Dict, List, Tuple, Hashable, Any
 import json, builtins, os
 
 # Pip
@@ -15,13 +15,20 @@ from .filelock import FileLock
 
 JSONData = Union[
     str, int, float, bool,
-    Dict[str, Any],
+    Dict[Hashable, Any],
     List[Any],
     Tuple[Any]
 ]
 
 
 # ------------------------------------------------------------ Public methods ------------------------------------------------------------ #
+
+def get_value(
+    d: dict,
+    key: Hashable,
+    default_value: Optional[any] = None
+) -> Optional[any]:
+    return d[key] if key in d else default_value
 
 def load(
     path: str,
