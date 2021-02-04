@@ -6,7 +6,7 @@ def sh(
     debug: bool = False
 ) -> str:
     import subprocess
-    
+
     if debug:
         print(cmd)
 

@@ -36,7 +36,7 @@ def download(
     return False
 
 def __download(
-    url: str, 
+    url: str,
     path: str,
     debug: bool = False
 ) -> bool:
@@ -49,13 +49,13 @@ def __download(
     except Exception as e1:
         if debug:
             print(e1)
-        
+
         try:
             os.remove(path)
         except Exception as e2:
             if debug:
                 print(e2)
-        
+
         return False
 
 def req_multi_download(
@@ -145,7 +145,7 @@ def req_download(
     return False
 
 def __req_download(
-    url: str, 
+    url: str,
     path: str,
     debug: bool = False,
     headers: Optional[Dict] = None,
@@ -341,7 +341,7 @@ def __request(
     if headers is None:
         headers = {}
 
-    if user_agent or fake_useragent:    
+    if user_agent or fake_useragent:
         headers = __headers_by_optionally_setting(
             headers,
             {
@@ -352,10 +352,10 @@ def __request(
                 'Connection':'keep-alive'
             }
         )
-    
+
     if proxy:
         proxy = proxy.lstrip('https://').lstrip('http://').lstrip('ftp://')
-    
+
     if proxy_http or proxy:
         proxy_http = (proxy_http or proxy).lstrip('http://')
 
@@ -409,11 +409,11 @@ def __request(
         return None
 
 def __headers_by_optionally_setting(
-    headers: Dict, 
+    headers: Dict,
     keys_values: Dict
 ) -> Dict:
     for key, value in keys_values.items():
         if key not in headers:
             headers[key] = value
-    
+
     return headers

@@ -44,10 +44,10 @@ def load(
     if obj is None:
         if default_value is not None:
             obj = default_value
-        
+
             if save_if_not_exists:
                 save(path, obj)
-    
+
     return obj
 
 def load_sync(

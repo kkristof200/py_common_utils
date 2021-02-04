@@ -4,9 +4,9 @@ import tempfile, platform, os, uuid
 
 # allowed_extensions is an array, like ['jpg', 'jpeg', 'png']
 def file_paths_from_folder(
-    root_folder_path: str, 
-    allowed_extensions: Optional[List[str]] = None, 
-    ignored_extensions: Optional[List[str]] = ['.ds_store'], 
+    root_folder_path: str,
+    allowed_extensions: Optional[List[str]] = None,
+    ignored_extensions: Optional[List[str]] = ['.ds_store'],
     depth: int = -1,
     recursive: bool = True, #kept for convenience
 ) -> List[str]:
@@ -20,7 +20,7 @@ def file_paths_from_folder(
 
     if allowed_extensions:
         allowed_extensions = [ae.lower() for ae in allowed_extensions]
-    
+
     if ignored_extensions:
         ignored_extensions = [ie.lower() for ie in ignored_extensions]
 
@@ -76,11 +76,11 @@ def file_paths_from_folder(
 
         if len(recent_folder_paths) == 0:
             return file_paths
-    
+
     return file_paths
 
 def folder_paths_from_folder(
-    root_folder_path: str, 
+    root_folder_path: str,
     depth: int = -1
 ) -> List[str]:
     """
@@ -103,7 +103,7 @@ def folder_paths_from_folder(
                 break
 
         return _folder_paths
-    
+
     recent_folder_paths = [root_folder_path]
 
     while current_depth < depth or depth == -1:
@@ -191,7 +191,7 @@ def file_name(_path: str, include_extension: bool = True) -> str:
 
     if not include_extension:
         basename = remove_extensions(basename)
-    
+
     return basename
 
 def extension(_path: str, include_dot: bool = False) -> Optional[str]:
@@ -199,18 +199,18 @@ def extension(_path: str, include_dot: bool = False) -> Optional[str]:
 
     if len(path_comps) == 1:
         return None
-    
+
     ext = path_comps[-1]
 
     if include_dot:
         ext = '.' + ext
-    
+
     return ext
 
 def replace_extension(_path: str, new_extension: str) -> str:
     if not new_extension.startswith('.'):
         new_extension = '.' + new_extension
-    
+
     return _path.replace(extension(_path, include_dot=True), new_extension)
 
 def remove_extensions(_path: str) -> str:
@@ -219,7 +219,7 @@ def remove_extensions(_path: str) -> str:
 
         if ext is None:
             return _path
-        
+
         _path = _path.rstrip(ext)
 
 def remove(_path: str) -> bool:

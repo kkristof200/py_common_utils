@@ -50,22 +50,11 @@ def seconds_to_time_str(seconds: float) -> str:
 
     millis = seconds - int(seconds)
     seconds = int(seconds)
-    time_str = ''
-
-    if hours > 0:
-        time_str = str(hours).zfill(2)
-
-    if minutes > 0 or len(time_str) > 0:
-        if len(time_str) > 0:
-            time_str += ':'
-
-        time_str += str(minutes).zfill(2)
-
-    if seconds > 0 or len(time_str) > 0:
-        if len(time_str) > 0:
-            time_str += ':'
-
-        time_str += str(seconds).zfill(2)
+    time_str = '{}:{}:{}'.format(
+        str(hours).zfill(2),
+        str(minutes).zfill(2),
+        str(seconds).zfill(2)
+    )
 
     if millis > 0:
         time_str += '.'
@@ -81,10 +70,10 @@ def is_between_hours(start_h: float, stop_h: float, utc: bool = False) -> bool:
     return is_between_seconds(start_h*seconds_in_hour, stop_h*seconds_in_hour, utc=utc)
 
 def is_between_seconds(start_s: float, stop_s: float, utc: bool = False) -> bool:
-        if start_s >= seconds_in_day:
+        while start_s >= seconds_in_day:
             start_s -= seconds_in_day
 
-        if stop_s >= seconds_in_day:
+        while stop_s >= seconds_in_day:
             stop_s -= seconds_in_day
 
         now_s = today_current_sec(utc=utc)
@@ -92,7 +81,7 @@ def is_between_seconds(start_s: float, stop_s: float, utc: bool = False) -> bool
         if start_s < stop_s:
             return now_s >= start_s and now_s < stop_s
         elif start_s > stop_s:
-            return now_s < start_s or now_s >= stop_s
+            return now_s >= start_s and now_s < stop_s + seconds_in_day
 
         return False
 

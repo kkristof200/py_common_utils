@@ -17,12 +17,12 @@ def sleep(
             _min_s = min_s
             min_s = max_s
             max_s = min_s
-        
+
         sleep_s = float(random.randint(int(min_s*multi), int(max_s*multi)))/multi
-    
+
     if max_deviation_perc is not None and max_deviation_perc > 0:
         deviation_perc = random.randint(int(-1*max_deviation_perc*multi), int(max_deviation_perc*multi))/multi
 
         sleep_s += sleep_s*deviation_perc/100
-    
+
     time.sleep(sleep_s)
