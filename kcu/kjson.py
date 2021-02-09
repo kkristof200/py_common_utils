@@ -5,6 +5,7 @@ from typing import Union, Optional, Dict, List, Tuple, Hashable, Any
 import json, builtins, os
 
 # Pip
+from noraise import noraise
 from .filelock import FileLock
 
 # ---------------------------------------------------------------------------------------------------------------------------------------- #
@@ -50,19 +51,15 @@ def load(
 
     return obj
 
+@noraise()
 def load_sync(
     path: str,
     default_value: Optional[JSONData] = None,
     save_if_not_exists: bool = False,
     timeout: Optional[float] = None
 ) -> Optional[JSONData]:
-    try:
-        with FileLock(path, timeout=timeout):
-            return load(path=path, default_value=default_value, save_if_not_exists=save_if_not_exists)
-    except Exception as e:
-        builtins.print('ERROR - kjson.load_sync(\'{}\')'.format(path), e)
-
-        return None
+    with FileLock(path, timeout=timeout):
+        return load(path=path, default_value=default_value, save_if_not_exists=save_if_not_exists)
 
 def save(
     path: str,
@@ -73,18 +70,14 @@ def save(
 
     return os.path.exists(path)
 
+@noraise()
 def save_sync(
     path: str,
     obj: Optional[JSONData],
     timeout: Optional[float] = None
 ) -> bool:
-    try:
-        with FileLock(path, timeout=timeout):
-            return save(path=path, obj=obj)
-    except Exception as e:
-        builtins.print('ERROR - kjson.save_sync(\'{}\')'.format(path), e)
-
-        return False
+    with FileLock(path, timeout=timeout):
+        return save(path=path, obj=obj)
 
 def print(obj: JSONData) -> None:
     builtins.print(json.dumps(obj, indent=4))
