@@ -323,6 +323,29 @@ def delete(
     return request(url, method=RequestMethod.DELETE, params=params, headers=headers, data=data, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, user_agent=user_agent, fake_useragent=fake_useragent, proxy=proxy, proxy_http=proxy_http, proxy_https=proxy_https, proxy_ftp=proxy_ftp,
     allow_redirects=allow_redirects)
 
+def proxy_to_dict(
+    proxy: Optional[str] = None,
+    proxy_http: Optional[str] = None,
+    proxy_https: Optional[str] = None,
+    proxy_ftp: Optional[str] = None
+) -> dict:
+    proxy_http = proxy_http or proxy if (proxy and not proxy.startswith('https') and not proxy.startswith('ftp')) else None
+    proxy_https = proxy_https or proxy if (proxy and not proxy.startswith('http') and not proxy.startswith('ftp')) else None
+    proxy_ftp = proxy_ftp or proxy if (proxy and not proxy.startswith('https') and not proxy.startswith('http')) else None
+
+    proxy_dict = {}
+
+    if proxy_http:
+        proxy_dict['http'] = 'http://{}'.format(proxy_http.lstrip('http://'))
+
+    if proxy_https:
+        proxy_dict['http'] = 'http://{}'.format(proxy_https.lstrip('http://'))
+
+    if proxy_ftp:
+        proxy_dict['ftp'] = 'ftp://{}'.format(proxy_ftp.lstrip('ftp://'))
+
+    return proxy_dict
+
 def __request(
     url: str,
     method: RequestMethod,
@@ -353,31 +376,12 @@ def __request(
             }
         )
 
-    if proxy:
-        proxy = proxy.lstrip('https://').lstrip('http://').lstrip('ftp://')
-
-    if proxy_http or proxy:
-        proxy_http = (proxy_http or proxy).lstrip('http://')
-
-    if proxy_https or proxy:
-        proxy_https = (proxy_https or proxy).lstrip('https://')
-
-    if proxy_ftp or proxy:
-        proxy_ftp = (proxy_ftp or proxy).lstrip('ftp://')
-
-    proxies = None
-
-    if proxy_http or proxy_https or proxy_ftp:
-        proxies = {}
-
-        if proxy_http:
-            proxies['http'] = 'http://{}'.format(proxy_http)
-
-        if proxy_https:
-            proxies['https'] = 'https://{}'.format(proxy_https)
-
-        if proxy_ftp:
-            proxies['ftp'] = 'ftp://{}'.format(proxy_ftp)
+    proxies = proxy_to_dict(
+        proxy=proxy,
+        proxy_http=proxy_http,
+        proxy_https=proxy_https,
+        proxy_ftp=proxy_ftp
+    )
 
     params = {k:v for k, v in params.items() if k and v is not None} if params else None
 
