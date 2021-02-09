@@ -1,8 +1,5 @@
 from typing import List, Tuple, Optional, Union
 import tempfile, platform, os, uuid
-import inspect
-
-from noraise import noraise
 
 
 # allowed_extensions is an array, like ['jpg', 'jpeg', 'png']
@@ -124,13 +121,24 @@ def path_of_file(f: str) -> str:
     return os.path.abspath(f)
 
 # If left None, the file path of the caller will be used, but in that case, the return value can be None too
-@noraise()
 def folder_path_of_file(file: Optional[str] = None) -> Optional[str]:
-    return os.path.dirname(path_of_file(file or inspect.stack()[1][1]))
+    if file is None:
+        try:
+            import inspect
 
-@noraise()
+            file = inspect.stack()[1][1]
+        except:
+            return None
+
+    return os.path.dirname(path_of_file(file))
+
 def path_for_subpath_in_current_folder(subpath: str) -> Optional[str]:
-    return os.path.join(os.path.dirname(path_of_file(inspect.stack()[1][1])), subpath)
+    try:
+        import inspect
+
+        return os.path.join(os.path.dirname(path_of_file(inspect.stack()[1][1])), subpath)
+    except:
+        return None
 
 def temp_path_for_path(_path: str) -> str:
     import random, string

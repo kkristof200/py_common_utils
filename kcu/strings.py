@@ -1,9 +1,10 @@
 from typing import List
-from noraise import noraise
 
-@noraise()
 def between(string: str, from_str: str, to_str: str) -> str:
-    return string.split(from_str)[1].split(to_str)[0]
+    try:
+        return string.split(from_str)[1].split(to_str)[0]
+    except:
+        return None
 
 def split(string: str, by_substrings: List[str], keep_splitters: bool = True) -> List[str]:
     all_splitted = [string]
