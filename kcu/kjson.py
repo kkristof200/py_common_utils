@@ -35,10 +35,13 @@ def load(
     default_value: Optional[JSONData] = None,
     save_if_not_exists: bool = False
 ) -> Optional[JSONData]:
-    try:
-        with open(path, 'r') as file:
-            obj = json.load(file)
-    except:
+    if os.path.exists(path):
+        try:
+            with open(path, 'r') as file:
+                obj = json.load(file)
+        except:
+            obj = None
+    else:
         obj = None
 
     if obj is None:
