@@ -329,9 +329,9 @@ def proxy_to_dict(
     proxy_https: Optional[str] = None,
     proxy_ftp: Optional[str] = None
 ) -> dict:
-    proxy_http = proxy_http or proxy if (proxy and not proxy.startswith('https') and not proxy.startswith('ftp')) else None
-    proxy_https = proxy_https or proxy if (proxy and not proxy.startswith('http') and not proxy.startswith('ftp')) else None
-    proxy_ftp = proxy_ftp or proxy if (proxy and not proxy.startswith('https') and not proxy.startswith('http')) else None
+    proxy_http = proxy_http or (proxy if (proxy and not proxy.startswith('https') and not proxy.startswith('ftp')) else None)
+    proxy_https = proxy_https or (proxy if (proxy and proxy.startswith('https')) else None)
+    proxy_ftp = proxy_ftp or (proxy if (proxy and proxy.startswith('ftp')) else None)
 
     proxy_dict = {}
 
@@ -339,7 +339,7 @@ def proxy_to_dict(
         proxy_dict['http'] = 'http://{}'.format(proxy_http.lstrip('http://'))
 
     if proxy_https:
-        proxy_dict['http'] = 'http://{}'.format(proxy_https.lstrip('http://'))
+        proxy_dict['https'] = 'https://{}'.format(proxy_https.lstrip('https://'))
 
     if proxy_ftp:
         proxy_dict['ftp'] = 'ftp://{}'.format(proxy_ftp.lstrip('ftp://'))
@@ -403,7 +403,7 @@ def __request(
             if debug:
                 print(resp.status_code, resp.text)
 
-            return None
+            # return None
 
         return resp
     except Exception as e:
