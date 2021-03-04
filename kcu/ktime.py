@@ -100,7 +100,7 @@ def hours_till(h: float, utc: bool = False) -> float:
     return seconds_till(h*seconds_in_hour, utc=utc)/seconds_in_hour
 
 def seconds_till(s: float, utc: bool = False) -> float:
-    return s - now(utc=utc)
+    return s - time(utc=utc)
 
 def today_current_hour(utc: bool = False) -> float:
     return today_current_sec(utc=utc) / seconds_in_hour
