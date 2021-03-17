@@ -384,6 +384,10 @@ def __request(
     )
 
     params = {k:v for k, v in params.items() if k and v is not None} if params else None
+    headers = {
+        k if isinstance(k, str) or isinstance(k, bytes) else str(k):v if isinstance(v, str) or isinstance(v, bytes) else str(v)
+        for k, v in headers.items()
+    }
 
     try:
         if method == RequestMethod.GET:
