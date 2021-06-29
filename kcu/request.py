@@ -329,20 +329,20 @@ def proxy_to_dict(
     proxy_https: Optional[str] = None,
     proxy_ftp: Optional[str] = None
 ) -> dict:
-    proxy_http = proxy_http or (proxy if (proxy and not proxy.startswith('https') and not proxy.startswith('ftp')) else None)
-    proxy_https = proxy_https or (proxy if (proxy and proxy.startswith('https')) else None)
-    proxy_ftp = proxy_ftp or (proxy if (proxy and proxy.startswith('ftp')) else None)
+    proxy_http  = proxy_http  or (proxy if (proxy and not proxy.startswith('https') and not proxy.startswith('ftp'))   else None)
+    proxy_https = proxy_https or (proxy if (proxy and not proxy.startswith('http')  and not proxy.startswith('ftp'))   else None)
+    proxy_ftp   = proxy_ftp   or (proxy if (proxy and not proxy.startswith('http')  and not proxy.startswith('https')) else None)
 
     proxy_dict = {}
 
     if proxy_http:
-        proxy_dict['http'] = 'http://{}'.format(proxy_http.lstrip('http://'))
+        proxy_dict['http'] = 'http://{}'.format(proxy_http.split('://')[-1])
 
     if proxy_https:
-        proxy_dict['https'] = 'https://{}'.format(proxy_https.lstrip('https://'))
+        proxy_dict['https'] = 'https://{}'.format(proxy_https.split('://')[-1])
 
     if proxy_ftp:
-        proxy_dict['ftp'] = 'ftp://{}'.format(proxy_ftp.lstrip('ftp://'))
+        proxy_dict['ftp'] = 'ftp://{}'.format(proxy_ftp.split('://')[-1])
 
     return proxy_dict
 
@@ -389,16 +389,29 @@ def __request(
         for k, v in headers.items()
     }
 
+    verify = proxies=={}
+
+    if not verify:
+        requests.packages.urllib3.disable_warnings()
+
+    request_common_kwargs = {
+        'params': params,
+        'headers': headers,
+        'proxies': proxies,
+        'verify': verify,
+        'allow_redirects': allow_redirects
+    }
+
     try:
         if method == RequestMethod.GET:
-            resp = requests.get(url, params=params, headers=headers, proxies=proxies)
+            resp = requests.get(url, **request_common_kwargs)
         elif method == RequestMethod.POST:
             if type(data) == dict or type(data) == list:
-                resp = requests.post(url, json=data, params=params, headers=headers, proxies=proxies, allow_redirects=allow_redirects)
+                resp = requests.post(url, json=data, **request_common_kwargs)
             else:
-                resp = requests.post(url, data=data, params=params, headers=headers, proxies=proxies, allow_redirects=allow_redirects)
+                resp = requests.post(url, data=data, **request_common_kwargs)
         else:#elif method == RequestMethod.DELETE:
-            resp = requests.post(url, data=data, params=params, headers=headers, proxies=proxies, allow_redirects=allow_redirects)
+            resp = requests.post(url, data=data, **request_common_kwargs)
 
         if resp is None:
             if debug:
