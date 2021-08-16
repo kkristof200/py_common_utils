@@ -69,21 +69,25 @@ def load_sync(
 
 def save(
     path: str,
-    obj: Optional[JSONData]
+    obj: Optional[JSONData],
+    indent: int = 4,
+    ensure_ascii: bool = True
 ) -> bool:
     with open(path, 'w') as file:
-        json.dump(obj, file, indent=4)
+        json.dump(obj, file, indent=indent, ensure_ascii=ensure_ascii)
 
     return os.path.exists(path)
 
 def save_sync(
     path: str,
     obj: Optional[JSONData],
-    timeout: Optional[float] = None
+    timeout: Optional[float] = None,
+    indent: int = 4,
+    ensure_ascii: bool = True
 ) -> bool:
     try:
         with FileLock(path, timeout=timeout):
-            return save(path=path, obj=obj)
+            return save(path=path, obj=obj, indent=indent, ensure_ascii=ensure_ascii)
     except Exception as e:
         builtins.print('ERROR - kjson.save_sync(\'{}\')'.format(path), e)
 

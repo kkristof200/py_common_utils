@@ -9,7 +9,7 @@ else:
 
 setuptools.setup(
     name="kcu",
-    version="0.0.67",
+    version="0.0.68",
     author="Kristof",
     description="some python utility methods that I often use compiled in a package",
     long_description=long_description,
@@ -18,7 +18,7 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     install_requires=[
         'fake-useragent>=0.1.11',
-        'requests>=2.25.1',
+        'requests>=2.26.0',
         'simple-multiprocessing>=0.0.15'
     ],
     classifiers=[
