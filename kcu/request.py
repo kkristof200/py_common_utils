@@ -127,6 +127,7 @@ def req_download(
             url,
             path,
             debug=debug,
+            headers=headers,
             user_agent=user_agent,
             fake_useragent=fake_useragent,
             proxy=proxy,
@@ -162,23 +163,16 @@ def __req_download(
 
     if user_agent or fake_useragent:
         headers = __headers_by_optionally_setting(headers, {'User-Agent':user_agent or FakeUserAgent().random})
-
-    proxies = None
-
-    if proxy or proxy_http or proxy_https or proxy_ftp:
-        proxies = {}
-
-        if proxy_http:
-            proxies['http'] = proxy_http or proxy
-
-        if proxy_https:
-            proxies['https'] = proxy_https or proxy
-
-        if proxy_ftp:
-            proxies['ftp'] = proxy_ftp or proxy
+    
+    proxies = proxy_to_dict(
+        proxy=proxy,
+        proxy_http=proxy_http,
+        proxy_https=proxy_https,
+        proxy_ftp=proxy_ftp
+    )
 
     try:
-        resp = requests.get(url, headers=headers, proxies=proxies, stream=True, timeout=timeout)
+        resp = requests.get(url, headers=headers, proxies=proxies, stream=True, timeout=timeout, allow_redirects=allow_redirects)
 
         if resp and resp.status_code in [200, 201]:
             with open(path, 'wb') as f:
@@ -213,7 +207,8 @@ def request(
     proxy_http: Optional[str] = None,
     proxy_https: Optional[str] = None,
     proxy_ftp: Optional[str] = None,
-    allow_redirects: bool = True
+    allow_redirects: bool = True,
+    stream: bool = False
 ) -> Optional[Response]:
     current_try_count = 0
 
@@ -235,7 +230,8 @@ def request(
             proxy_http=proxy_http,
             proxy_https=proxy_https,
             proxy_ftp=proxy_ftp,
-            allow_redirects=allow_redirects
+            allow_redirects=allow_redirects,
+            stream=stream
         )
 
         if resp is not None:
@@ -261,10 +257,11 @@ def get(
     proxy_http: Optional[str] = None,
     proxy_https: Optional[str] = None,
     proxy_ftp: Optional[str] = None,
-    allow_redirects: bool = True
+    allow_redirects: bool = True,
+    stream: bool = False
 ) -> Optional[Response]:
     return request(url, method=RequestMethod.GET, params=params, headers=headers, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, user_agent=user_agent, fake_useragent=fake_useragent, proxy=proxy, proxy_http=proxy_http, proxy_https=proxy_https, proxy_ftp=proxy_ftp,
-    allow_redirects=allow_redirects)
+    allow_redirects=allow_redirects, stream=stream)
 
 def post(
     url: str,
@@ -280,10 +277,11 @@ def post(
     proxy_http: Optional[str] = None,
     proxy_https: Optional[str] = None,
     proxy_ftp: Optional[str] = None,
-    allow_redirects: bool = True
+    allow_redirects: bool = True,
+    stream: bool = False
 ) -> Optional[Response]:
     return request(url, method=RequestMethod.POST, params=params, headers=headers, data=data, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, user_agent=user_agent, fake_useragent=fake_useragent, proxy=proxy, proxy_http=proxy_http, proxy_https=proxy_https, proxy_ftp=proxy_ftp,
-    allow_redirects=allow_redirects)
+    allow_redirects=allow_redirects, stream=stream)
 
 def put(
     url: str,
@@ -299,10 +297,11 @@ def put(
     proxy_http: Optional[str] = None,
     proxy_https: Optional[str] = None,
     proxy_ftp: Optional[str] = None,
-    allow_redirects: bool = True
+    allow_redirects: bool = True,
+    stream: bool = False
 ) -> Optional[Response]:
     return request(url, method=RequestMethod.PUT, params=params, headers=headers, data=data, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, user_agent=user_agent, fake_useragent=fake_useragent, proxy=proxy, proxy_http=proxy_http, proxy_https=proxy_https, proxy_ftp=proxy_ftp,
-    allow_redirects=allow_redirects)
+    allow_redirects=allow_redirects, stream=stream)
 
 def delete(
     url: str,
@@ -318,10 +317,11 @@ def delete(
     proxy_http: Optional[str] = None,
     proxy_https: Optional[str] = None,
     proxy_ftp: Optional[str] = None,
-    allow_redirects: bool = True
+    allow_redirects: bool = True,
+    stream: bool = False
 ) -> Optional[Response]:
     return request(url, method=RequestMethod.DELETE, params=params, headers=headers, data=data, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, user_agent=user_agent, fake_useragent=fake_useragent, proxy=proxy, proxy_http=proxy_http, proxy_https=proxy_https, proxy_ftp=proxy_ftp,
-    allow_redirects=allow_redirects)
+    allow_redirects=allow_redirects, stream=stream)
 
 def proxy_to_dict(
     proxy: Optional[str] = None,
@@ -329,20 +329,28 @@ def proxy_to_dict(
     proxy_https: Optional[str] = None,
     proxy_ftp: Optional[str] = None
 ) -> dict:
-    proxy_http  = proxy_http  or (proxy if (proxy and not proxy.startswith('https') and not proxy.startswith('ftp'))   else None)
-    proxy_https = proxy_https or (proxy if (proxy and not proxy.startswith('http')  and not proxy.startswith('ftp'))   else None)
-    proxy_ftp   = proxy_ftp   or (proxy if (proxy and not proxy.startswith('http')  and not proxy.startswith('https')) else None)
+    DEFAULT_PROXY_PROTOCOL = 'http'
+
+    main_proxy = proxy or proxy_http or proxy_https or proxy_ftp
+
+    proxy_http  = proxy_http  or main_proxy
+    proxy_https = proxy_https or main_proxy
+    proxy_ftp   = proxy_ftp   or main_proxy
 
     proxy_dict = {}
 
     if proxy_http:
-        proxy_dict['http'] = 'http://{}'.format(proxy_http.split('://')[-1])
+        proxy_dict['http'] = proxy_http
 
     if proxy_https:
-        proxy_dict['https'] = 'https://{}'.format(proxy_https.split('://')[-1])
+        proxy_dict['https'] = proxy_https
 
     if proxy_ftp:
-        proxy_dict['ftp'] = 'ftp://{}'.format(proxy_ftp.split('://')[-1])
+        proxy_dict['ftp'] = proxy_ftp
+    
+    for protocol, proxy in proxy_dict.items():
+        if '://' not in proxy:
+            proxy_dict[protocol] = f'{DEFAULT_PROXY_PROTOCOL}://{proxy}'
 
     return proxy_dict
 
@@ -359,7 +367,8 @@ def __request(
     proxy_http: Optional[str] = None,
     proxy_https: Optional[str] = None,
     proxy_ftp: Optional[str] = None,
-    allow_redirects: bool = True
+    allow_redirects: bool = True,
+    stream: bool = False
 ) -> Optional[Response]:
     if headers is None:
         headers = {}
@@ -382,7 +391,7 @@ def __request(
         proxy_https=proxy_https,
         proxy_ftp=proxy_ftp
     )
-
+    
     params = {k:v for k, v in params.items() if k and v is not None} if params else None
     headers = {
         k if isinstance(k, str) or isinstance(k, bytes) else str(k):v if isinstance(v, str) or isinstance(v, bytes) else str(v)
@@ -390,6 +399,8 @@ def __request(
     }
 
     verify = proxies=={}
+    
+    print('proxies', proxies)
 
     if not verify:
         requests.packages.urllib3.disable_warnings()
@@ -399,7 +410,8 @@ def __request(
         'headers': headers,
         'proxies': proxies,
         'verify': verify,
-        'allow_redirects': allow_redirects
+        'allow_redirects': allow_redirects,
+        'stream': stream
     }
 
     try:
