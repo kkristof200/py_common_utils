@@ -399,8 +399,6 @@ def __request(
     }
 
     verify = proxies=={}
-    
-    print('proxies', proxies)
 
     if not verify:
         requests.packages.urllib3.disable_warnings()
