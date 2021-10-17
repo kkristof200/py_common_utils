@@ -20,7 +20,8 @@ def download(
         current_try_count += 1
 
         if debug:
-            print(url + ' | ' + str(current_try_count) + '/' + str(max_request_try_count))
+            print(f'{url} | {current_try_count}/{max_request_try_count}')
+
 
         res = __download(
             url,
@@ -216,7 +217,8 @@ def request(
         current_try_count += 1
 
         if debug:
-            print(url + ' | ' + str(current_try_count) + '/' + str(max_request_try_count))
+            proxy_str = f' (proxy: "{proxy}")' if proxy else ""
+            print(f'{url} | {current_try_count}/{max_request_try_count}{proxy_str}')
 
         resp = __request(
             url, method,
