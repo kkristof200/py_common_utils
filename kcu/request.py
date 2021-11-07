@@ -209,7 +209,8 @@ def request(
     proxy_https: Optional[str] = None,
     proxy_ftp: Optional[str] = None,
     allow_redirects: bool = True,
-    stream: bool = False
+    stream: bool = False,
+    timeout_: Optional[float] = None
 ) -> Optional[Response]:
     current_try_count = 0
 
@@ -233,7 +234,8 @@ def request(
             proxy_https=proxy_https,
             proxy_ftp=proxy_ftp,
             allow_redirects=allow_redirects,
-            stream=stream
+            stream=stream,
+            timeout_=timeout_
         )
 
         if resp is not None:
@@ -260,10 +262,11 @@ def get(
     proxy_https: Optional[str] = None,
     proxy_ftp: Optional[str] = None,
     allow_redirects: bool = True,
-    stream: bool = False
+    stream: bool = False,
+    timeout_: Optional[float] = None
 ) -> Optional[Response]:
     return request(url, method=RequestMethod.GET, params=params, headers=headers, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, user_agent=user_agent, fake_useragent=fake_useragent, proxy=proxy, proxy_http=proxy_http, proxy_https=proxy_https, proxy_ftp=proxy_ftp,
-    allow_redirects=allow_redirects, stream=stream)
+    allow_redirects=allow_redirects, stream=stream, timeout_=timeout_)
 
 def post(
     url: str,
@@ -280,10 +283,11 @@ def post(
     proxy_https: Optional[str] = None,
     proxy_ftp: Optional[str] = None,
     allow_redirects: bool = True,
-    stream: bool = False
+    stream: bool = False,
+    timeout_: Optional[float] = None
 ) -> Optional[Response]:
     return request(url, method=RequestMethod.POST, params=params, headers=headers, data=data, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, user_agent=user_agent, fake_useragent=fake_useragent, proxy=proxy, proxy_http=proxy_http, proxy_https=proxy_https, proxy_ftp=proxy_ftp,
-    allow_redirects=allow_redirects, stream=stream)
+    allow_redirects=allow_redirects, stream=stream, timeout_=timeout_)
 
 def put(
     url: str,
@@ -300,10 +304,11 @@ def put(
     proxy_https: Optional[str] = None,
     proxy_ftp: Optional[str] = None,
     allow_redirects: bool = True,
-    stream: bool = False
+    stream: bool = False,
+    timeout_: Optional[float] = None
 ) -> Optional[Response]:
     return request(url, method=RequestMethod.PUT, params=params, headers=headers, data=data, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, user_agent=user_agent, fake_useragent=fake_useragent, proxy=proxy, proxy_http=proxy_http, proxy_https=proxy_https, proxy_ftp=proxy_ftp,
-    allow_redirects=allow_redirects, stream=stream)
+    allow_redirects=allow_redirects, stream=stream, timeout_=timeout_)
 
 def delete(
     url: str,
@@ -320,10 +325,11 @@ def delete(
     proxy_https: Optional[str] = None,
     proxy_ftp: Optional[str] = None,
     allow_redirects: bool = True,
-    stream: bool = False
+    stream: bool = False,
+    timeout_: Optional[float] = None
 ) -> Optional[Response]:
     return request(url, method=RequestMethod.DELETE, params=params, headers=headers, data=data, max_request_try_count=max_request_try_count, sleep_time=sleep_time, debug=debug, user_agent=user_agent, fake_useragent=fake_useragent, proxy=proxy, proxy_http=proxy_http, proxy_https=proxy_https, proxy_ftp=proxy_ftp,
-    allow_redirects=allow_redirects, stream=stream)
+    allow_redirects=allow_redirects, stream=stream, timeout_=timeout_)
 
 def proxy_to_dict(
     proxy: Optional[str] = None,
@@ -370,7 +376,8 @@ def __request(
     proxy_https: Optional[str] = None,
     proxy_ftp: Optional[str] = None,
     allow_redirects: bool = True,
-    stream: bool = False
+    stream: bool = False,
+    timeout_: Optional[float] = None
 ) -> Optional[Response]:
     if headers is None:
         headers = {}
@@ -411,7 +418,8 @@ def __request(
         'proxies': proxies,
         'verify': verify,
         'allow_redirects': allow_redirects,
-        'stream': stream
+        'stream': stream,
+        'timeout_': timeout_
     }
 
     try:
