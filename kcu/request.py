@@ -419,7 +419,7 @@ def __request(
         'verify': verify,
         'allow_redirects': allow_redirects,
         'stream': stream,
-        'timeout_': timeout_
+        'timeout': timeout_
     }
 
     try:
